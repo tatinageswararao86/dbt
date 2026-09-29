@@ -37,6 +37,21 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   dbt:
-    # Applies to all files under models/example/
-    example:
-      +materialized: table
+    edw_trans:
+      +database: "{{ 'dev_tran_edw' if target.name == 'dev' else ('qa_tran_edw' if target.name == 'qa' else 'prod_tran_edw') }}"
+      employee:
+        +schema: employee
+        +materialized: table
+      customer:
+        +schema: customer
+        +materialized: table
+        
+    edw_pres:
+      +database: "{{ 'dev_analytics_edw' if target.name == 'dev' else ('qa_analytics_edw' if target.name == 'qa' else 'prod_analytics_edw') }}"
+      +schema: pres
+      +materialized: view
+
+seeds:
+  dbt:
+    +database: "{{ 'dev_tran_edw' if target.name == 'dev' else ('qa_tran_edw' if target.name == 'qa' else 'prod_tran_edw') }}"
+    +schema: master
